@@ -1,38 +1,62 @@
-.App {
+@import url("https://fonts.googleapis.com/css2?family=Raleway:wght@500&family=Roboto:wght@500&display=swap");
+
+.type-racer-container {
+  font-family: "Roboto";
+  margin-left: auto;
+  margin-right: auto;
+  width: 60%;
+}
+
+.type-racer-header {
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.text {
+  margin-top: 50px;
+  border: 1px solid black;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  flex-wrap: wrap;
+  font-size: 20px;
+  padding: 5px;
 }
 
-.App-link {
-  color: #61dafb;
+.word {
+  padding: 1px 0px;
+  display: flex;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.word.active {
+  border: 3px solid lightgray;
+  background-color: lightgray;
+}
+
+.correct {
+  background-color: lightgreen;
+}
+
+.incorrect {
+  background-color: red;
+}
+
+.active {
+  background-color: grey;
+}
+
+.source {
+  font-size: 20px;
+}
+
+.by {
+  font-style: italic;
+  color: gray;
+  font-size: 12px;
+}
+
+.citation {
+  margin-top: 10px;
+  margin-left: 10px;
+}
+
+.race-info {
+  margin-top: 10px;
 }
