@@ -4,18 +4,24 @@ import React, { useState, useEffect } from 'react'
 import useStateRef from 'react-usestateref'
 import setupText from './setupText'
 import WpmHandle from './WpmHandle'
+import AccuraceHandle from './AccuraceHandle'
 
 function App() {
   const [text, setText, textRef] = useStateRef()
+  const [textLength, setTextLength, textLengthRef] = useStateRef()
   const [source, setSource] = useState()
   const [by, setBy] = useState()
   const [countDown, setCountDown] = useState()
   const [racing, setRacing, racingRef] = useStateRef()
+  const [i, setI, iRef] = useStateRef(0)
+  const [inaccuracies, setInaccuracies, inaccuraciesRef] = useStateRef(0)
+  const [correctChars, setCorrectChars, correctCharsRef] = useStateRef(0)
 
   
   function startRace() {
-    setCountDown(3)
     getTextObject()
+    setCountDown(3)
+    setInaccuracies(0)
     setRacing(true)
     let interval = 0
     const countdownHandle = setInterval(async () => {
@@ -25,7 +31,7 @@ function App() {
           prevText[0].state = 'active'
           return prevText
         })
-        document.addEventListener('keydown', (e) => handleInput(e))
+        window.addEventListener('keydown', handleInput)
       }
       setCountDown(count => count - 1)
     }, 1000)
@@ -35,31 +41,53 @@ function App() {
     let textIndex = Math.floor(Math.random() * texts.length)
     const newText = setupText(texts, textIndex)
     setText(newText)
+    setTextLength(newText.length)
     setSource(texts[textIndex].source)
     setBy(texts[textIndex].by)
   }
   
-  let i = 0
-  
   function handleInput(e) {
-    let char = textRef.current[i].char
-    let newText = Object.assign([], textRef.current)
+    let i = iRef.current
+    const char = textRef.current[i].char
+    const newText = Object.assign([], textRef.current)
+    let newCorrectChars = textRef.current.filter(element => {
+      return element.state === "correct"
+    })
+    setCorrectChars(newCorrectChars.length)
     if ((char === 'space' && e.key === ' ') || e.key === char) {
-      let correctChars = textRef.current.filter(element => {
-        return element.state === "correct"
-      })
-      if (correctChars.length === textRef.current.length - 1) {
-        document.removeEventListener('keydown', (e) => handleInput(e))
+      if (i > 0 && newText[i - 1].state === 'incorrect') {
+        newText[i].state = 'incorrect'
+        if (i !== newText.length - 1) {
+          newText[i + 1].state = 'active'
+          setI(++i)
+        }
+      } else if (newCorrectChars.length === textLengthRef.current - 1) {
+        newText[i].state = 'correct'
+        window.removeEventListener('keydown', handleInput)
         setRacing(false)
-        i = 0
+        setI(0)
       } else {
         newText[i].state = 'correct'
         newText[i + 1].state = 'active'
-        i++
+        setI(++i)
       }
-    } /* else if ((48 <= e.keyCode && e.keyCode <= 90) || (96 <= e.keyCode && e.keyCode <= 111) || (160 <= e.keyCode && e.keyCode <= 165) || (169 <= e.keyCode && e.keyCode <= 171) || e.keyCode === 173 || (186 <= e.keyCode && e.keyCode <= 223)) {
+    } else if (32 === e.keyCode || (48 <= e.keyCode && e.keyCode <= 90) || (96 <= e.keyCode && e.keyCode <= 111) || (160 <= e.keyCode && e.keyCode <= 165) || (169 <= e.keyCode && e.keyCode <= 171) || e.keyCode === 173 || (186 <= e.keyCode && e.keyCode <= 223)) {
       newText[i].state = 'incorrect'
-    } */
+      setInaccuracies(++inaccuraciesRef.current)
+      if (i !== newText.length - 1) {
+        newText[i + 1].state = 'active'
+        setI(++i)
+      } else {
+        newText[i + 1] = {'char': 'space', 'state': 'active'}
+        setI(++i)
+      }
+    } else if (e.key === 'Backspace') {
+      if (i > 0 && newText[i - 1].state === 'incorrect') {
+        newText[i - 1].state = 'active'
+        newText[i].state = 'inactive'
+        setI(--i)
+      }
+    }
     setText(newText)
   }
   
@@ -89,10 +117,18 @@ function App() {
         <button onClick={() => startRace()} disabled={racing}>Press to start race!</button>
         <div className="race-info">
           <div className="countdown">{countDown ? 'Countdown: ' + countDown : ''}</div>
-          <WpmHandle 
-            racingRef={racingRef}
-            textRef={textRef}
-           />
+          {!countDown &&
+            <>
+              <WpmHandle 
+                racingRef={racingRef}
+                textRef={textRef}
+              />
+              <AccuraceHandle
+                inaccuraciesRef={inaccuraciesRef}
+                correctCharsRef={correctCharsRef}
+              />
+            </>
+          }
         </div>
       </div>
       <div className="text">

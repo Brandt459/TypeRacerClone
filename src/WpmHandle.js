@@ -14,12 +14,14 @@ export default function WpmHandle(props) {
                 let correctChars = textRef.current.filter(element => {
                     return element.state === "correct"
                 })
-                setWpm(Math.round((correctChars.length / 5) / ((timeRef.current - 4) / 60)))
+                setWpm(Math.round((correctChars.length / 5) / ((timeRef.current) / 60)))
             } else {
                 setTime(0)
             }
         }, 1000)
-        return interval
+        return () => {
+            clearInterval(interval)
+        }
     }, [])
 
     return (
