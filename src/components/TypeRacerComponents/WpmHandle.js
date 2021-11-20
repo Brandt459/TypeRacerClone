@@ -14,7 +14,13 @@ export default function WpmHandle(props) {
                 let correctChars = textRef.current.filter(element => {
                     return element.state === "correct"
                 })
-                setWpm(Math.round((correctChars.length / 5) / ((timeRef.current) / 60)))
+                const wpm = Math.round((correctChars.length / 5) / ((timeRef.current) / 60))
+                setWpm(wpm)
+                props.setWpmArray(prevArray => {
+                    let newArray = Object.assign([], prevArray)
+                    newArray.push(wpm)
+                    return newArray
+                })
             } else {
                 setTime(0)
             }

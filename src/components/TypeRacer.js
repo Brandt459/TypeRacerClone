@@ -1,12 +1,16 @@
-import './App.css'
-import texts from './Texts'
-import React, { useState, useEffect } from 'react'
+import '../css/TypeRacer.css'
+import texts from './TypeRacerComponents/Texts'
+import React, { useState } from 'react'
 import useStateRef from 'react-usestateref'
-import setupText from './setupText'
-import WpmHandle from './WpmHandle'
-import AccuraceHandle from './AccuraceHandle'
+import setupText from './TypeRacerComponents/setupText'
+import WpmHandle from './TypeRacerComponents/WpmHandle'
+import AccuraceHandle from './TypeRacerComponents/AccuraceHandle'
+import jwt_decode from 'jwt-decode'
+import WpmGraph from './TypeRacerComponents/WpmGraph'
+import AccuracyGraph from './TypeRacerComponents/AccuracyGraph'
 
-function App() {
+
+export default function TypeRacer() {
   const [text, setText, textRef] = useStateRef()
   const [textLength, setTextLength, textLengthRef] = useStateRef()
   const [source, setSource] = useState()
@@ -16,12 +20,25 @@ function App() {
   const [i, setI, iRef] = useStateRef(0)
   const [inaccuracies, setInaccuracies, inaccuraciesRef] = useStateRef(0)
   const [correctChars, setCorrectChars, correctCharsRef] = useStateRef(0)
+  const [wpmArray, setWpmArray] = useState()
+  const [accuracyArray, setAccuracyArray] = useState()
 
+
+  /* const token = localStorage.getItem('token').split(' ')[1]
+  const decodedToken = jwt_decode(token)
+  let currentDate = new Date()
+  if (decodedToken.exp * 1000 < currentDate.getTime()) {
+    console.log("Token expired.")
+  } else {
+    console.log("Valid token")
+  } */
   
   function startRace() {
     getTextObject()
     setCountDown(3)
     setInaccuracies(0)
+    setWpmArray(null)
+    setAccuracyArray(null)
     setRacing(true)
     let interval = 0
     const countdownHandle = setInterval(async () => {
@@ -122,10 +139,13 @@ function App() {
               <WpmHandle 
                 racingRef={racingRef}
                 textRef={textRef}
+                setWpmArray={(arr) => setWpmArray(arr)}
               />
               <AccuraceHandle
                 inaccuraciesRef={inaccuraciesRef}
                 correctCharsRef={correctCharsRef}
+                racingRef={racingRef}
+                setAccuracyArray={(arr) => setAccuracyArray(arr)}
               />
             </>
           }
@@ -151,8 +171,18 @@ function App() {
         <div className="source">{source}</div>
         <div className="by">- {by}</div>
       </div>
+      <div style={{display: 'flex', marginTop: 20}}>
+        {!racing && wpmArray &&
+          <WpmGraph 
+            wpmArray={wpmArray}
+          />
+        }
+        {!racing && accuracyArray &&
+          <AccuracyGraph 
+            accuracyArray={accuracyArray}
+          />
+        }
+      </div>
     </div>
   );
 }
-
-export default App;
