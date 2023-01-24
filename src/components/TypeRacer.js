@@ -1,6 +1,6 @@
 import '../css/TypeRacer.css'
 import texts from './TypeRacerComponents/Texts'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import useStateRef from 'react-usestateref'
 import setupText from './TypeRacerComponents/setupText'
 import WpmHandle from './TypeRacerComponents/WpmHandle'
@@ -64,6 +64,7 @@ export default function TypeRacer() {
   }
   
   function handleInput(e) {
+    e.preventDefault()
     let i = iRef.current
     const char = textRef.current[i].char
     const newText = Object.assign([], textRef.current)
@@ -151,7 +152,7 @@ export default function TypeRacer() {
           }
         </div>
       </div>
-      <div className="text">
+      <div className="text" id="typing-text">
         {words && words.map((word, index) => {
           return (
             <div className="word">
