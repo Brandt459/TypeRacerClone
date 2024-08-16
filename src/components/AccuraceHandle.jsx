@@ -1,22 +1,18 @@
 import React, { useState, useEffect } from 'react'
 
-export default function AccuraceHandle(props) {
-    const inaccuracies = props.inaccuraciesRef
-    const correctChars = props.correctCharsRef
+export default function AccuraceHandle({ inaccuracies, correctChars, racingRef, setAccuracyArray }) {
     const [accuracy, setAccuracy] = useState()
 
     useEffect(() => {
         const interval = setInterval(() => {
-            if (props.racingRef.current) {
+            if (racingRef.current) {
                 const accuracy = (100 * (1 - (inaccuracies.current / (inaccuracies.current + correctChars.current)))).toFixed(2)
                 setAccuracy(accuracy)
-                props.setAccuracyArray(prevArray => {
+                setAccuracyArray(prevArray => {
                     let newArray = Object.assign([], prevArray)
                     newArray.push(accuracy)
                     return newArray
                 })
-            } else {
-                
             }
         }, 1000)
         return () => {
@@ -25,6 +21,6 @@ export default function AccuraceHandle(props) {
     }, [])
 
     return (
-        <div className="accuracy">{accuracy && !isNaN(accuracy) ? 'Accuracy: ' + accuracy + '%' : ''}</div>
+        <p>{accuracy}% acc</p>
     )
 }
